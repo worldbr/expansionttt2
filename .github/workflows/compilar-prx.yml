@@ -21,7 +21,7 @@ jobs:
       - name: Preparar arquivo de log antes do build
         shell: bash
         run: |
-          printf '[TTT DLC Rebuild 2.0.1] Workflow iniciado\n' > build.log
+          printf '[TTT DLC Rebuild 2.0.2] Workflow iniciado\n' > build.log
 
       - name: Compilar PRX e preparar arquivos para instalar
         shell: bash
@@ -57,6 +57,7 @@ jobs:
             test "$(stat -c%s TTT_EXPANSION/ui/menu_bg.4444)" -eq 131072
             test "$(stat -c%s TTT_EXPANSION/ui/font_atlas.4444)" -eq 65536
             python3 tests/test_skin_assets.py
+            python3 tests/test_packed_skin.py
             python3 tests/test_packfile_expander.py
 
             echo "--- Compilando PRX ---"
@@ -94,14 +95,14 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: TTT-Expansion-Build-Log-V2001
+          name: TTT-Expansion-Build-Log-V2002
           path: build.log
           if-no-files-found: warn
       - name: Disponibilizar plugin para instalar
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: TTT-Expansion-PRX-REBUILD-V2001
+          name: TTT-Expansion-PRX-REBUILD-V2002
           path: dist/
           if-no-files-found: error
           compression-level: 6
