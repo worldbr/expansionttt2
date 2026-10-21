@@ -9,3 +9,7 @@ Leia **LEIA_PRIMEIRO_REBUILD_V2.md** para instruções. A ISO modificada pelo us
 Componentes que devem funcionar se os endereços ULUS10537 e seus arquivos originais coincidirem: Goku (Início), Goku (Meio), Goku (Meio) — Super Saiyajin; 4 Colors cada; plano separado 1P–4P; menu texturizado ABGR4444 com fallback; 6 desafios DLC com seleção e progresso manual em arquivo.
 
 Limitados/desabilitados: novos mapas carregáveis e modo História interno do jogo (não há hook validado); SFX próprios; personagens com movesets internos exclusivos (IDs 00/01/02 compartilham forma interna 0x47).
+
+## Build V2.0.1
+
+Veja `LEIA_CORRECAO_BUILD_V2001.md` para correção do erro 127 no GitHub Actions.
