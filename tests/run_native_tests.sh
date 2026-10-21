@@ -8,6 +8,7 @@ run_test() {
   "/tmp/ttt_expansion_${name}_$$"
   rm -f "/tmp/ttt_expansion_${name}_$$"
 }
+python3 tests/test_packed_skin.py
 run_test test_dlc_story src/dlc_story.c
 run_test test_gu_budget
 run_test test_native src/overlay.c src/toggle.c src/framecheck.c

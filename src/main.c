@@ -45,7 +45,7 @@ static void hex(char *d,int *p,int cap,uint32_t v) {
 static void probe_log(const char *phase) {
     TTTStubProbe x=ttt_frame_hook_probe();
     char s[270];int pos=0;s[0]=0;
-    append(s,&pos,sizeof(s),"[TTT DLC V2.0.0] STUB ");
+    append(s,&pos,sizeof(s),"[TTT DLC V2.0.2] STUB ");
     append(s,&pos,sizeof(s),phase);
     append(s,&pos,sizeof(s)," 08A66A80=");hex(s,&pos,sizeof(s),x.at_80);
     append(s,&pos,sizeof(s)," 08A66A84=");hex(s,&pos,sizeof(s),x.at_84);
@@ -56,7 +56,7 @@ static void probe_log(const char *phase) {
 static void callsites_log(const char *phase) {
     TTTCallsProbe c=ttt_frame_hook_probe_calls();
     char s[280];int p=0;s[0]=0;
-    append(s,&p,sizeof(s),"[TTT DLC V2.0.0] CALLS ");
+    append(s,&p,sizeof(s),"[TTT DLC V2.0.2] CALLS ");
     append(s,&p,sizeof(s),phase);
     append(s,&p,sizeof(s)," 08A63A48=");hex(s,&p,sizeof(s),c.site_a);
     append(s,&p,sizeof(s)," 08A63B10=");hex(s,&p,sizeof(s),c.site_b);
@@ -66,7 +66,7 @@ static void callsites_log(const char *phase) {
 }
 static void stats_log(void) {
     TTTFrameHookStats st=ttt_frame_hook_stats();char s[240];int p=0;s[0]=0;
-    append(s,&p,sizeof(s),"[TTT DLC V2.0.0] HOOK installed=");hex(s,&p,sizeof(s),(uint32_t)st.installed);
+    append(s,&p,sizeof(s),"[TTT DLC V2.0.2] HOOK installed=");hex(s,&p,sizeof(s),(uint32_t)st.installed);
     append(s,&p,sizeof(s)," calls=");hex(s,&p,sizeof(s),st.calls);
     append(s,&p,sizeof(s)," draws=");hex(s,&p,sizeof(s),st.draws);
     append(s,&p,sizeof(s)," buffer=");hex(s,&p,sizeof(s),st.last_buffer);
@@ -77,7 +77,7 @@ static void stats_log(void) {
 static void gpu_guard_log(const char *phase) {
     TTTGeGuardStats g=ttt_gpu_guard_stats();
     char s[490];int p=0;s[0]=0;
-    append(s,&p,sizeof(s),"[TTT DLC V2.0.0] GE GUARD ");append(s,&p,sizeof(s),phase);
+    append(s,&p,sizeof(s),"[TTT DLC V2.0.2] GE GUARD ");append(s,&p,sizeof(s),phase);
     append(s,&p,sizeof(s)," init_save=");hex(s,&p,sizeof(s),(uint32_t)g.init_save);
     append(s,&p,sizeof(s)," init_restore=");hex(s,&p,sizeof(s),(uint32_t)g.init_restore);
     append(s,&p,sizeof(s)," frame_save=");hex(s,&p,sizeof(s),(uint32_t)g.frame_save);
@@ -94,7 +94,7 @@ static void gpu_guard_log(const char *phase) {
 }
 static void input_log(const char *phase) {
     TTTInputHookStats st=ttt_input_hook_stats();char s[300];int p=0;s[0]=0;
-    append(s,&p,sizeof(s),"[TTT DLC V2.0.0] INPUT ");append(s,&p,sizeof(s),phase);
+    append(s,&p,sizeof(s),"[TTT DLC V2.0.2] INPUT ");append(s,&p,sizeof(s),phase);
     append(s,&p,sizeof(s)," installed=");hex(s,&p,sizeof(s),(uint32_t)st.installed);
     append(s,&p,sizeof(s)," site=");hex(s,&p,sizeof(s),st.site_opcode);
     append(s,&p,sizeof(s)," target=");hex(s,&p,sizeof(s),st.target);
@@ -108,7 +108,7 @@ static void input_log(const char *phase) {
 }
 static void bridge_log(const char *phase){
     TTTBridgeStats st=ttt_bridge_stats();char b[300];int p=0;b[0]=0;
-    append(b,&p,sizeof(b),"[TTT DLC V2.0.0] BRIDGE ");append(b,&p,sizeof(b),phase);
+    append(b,&p,sizeof(b),"[TTT DLC V2.0.2] BRIDGE ");append(b,&p,sizeof(b),phase);
     append(b,&p,sizeof(b)," installed=");hex(b,&p,sizeof(b),(uint32_t)st.installed);
     append(b,&p,sizeof(b)," error=");hex(b,&p,sizeof(b),(uint32_t)st.last_error);
     append(b,&p,sizeof(b)," A00=");hex(b,&p,sizeof(b),st.a);
@@ -127,7 +127,7 @@ static void bridge_log(const char *phase){
 static void resource_log(const char *phase){
     TTTResourceHookStats st=ttt_res_hook_stats();
     char b[400];int p=0;b[0]=0;
-    append(b,&p,sizeof(b),"[TTT DLC V2.0.0] RESOURCE ");append(b,&p,sizeof(b),phase);
+    append(b,&p,sizeof(b),"[TTT DLC V2.0.2] RESOURCE ");append(b,&p,sizeof(b),phase);
     append(b,&p,sizeof(b)," installed=");hex(b,&p,sizeof(b),(uint32_t)st.installed);
     append(b,&p,sizeof(b)," error=");hex(b,&p,sizeof(b),(uint32_t)st.last_error);
     append(b,&p,sizeof(b)," checked=");hex(b,&p,sizeof(b),st.calls_checked);
@@ -150,7 +150,7 @@ static void resource_log(const char *phase){
      * resource requests and tells us exactly what the redirect returned. */
     if(st.match_count){
         char m[260];int q=0;m[0]=0;
-        append(m,&q,sizeof(m),"[TTT DLC V2.0.0] RESOURCE MATCH count=");
+        append(m,&q,sizeof(m),"[TTT DLC V2.0.2] RESOURCE MATCH count=");
         hex(m,&q,sizeof(m),st.match_count);
         append(m,&q,sizeof(m)," id=");hex(m,&q,sizeof(m),st.match_id);
         append(m,&q,sizeof(m)," offset=");hex(m,&q,sizeof(m),st.match_offset);
@@ -164,7 +164,7 @@ static void resource_log(const char *phase){
 static void inject_log(const char *phase){
     TTTActorInjectStats st=ttt_actor_inject_stats();
     char s[400];int p=0;int i;s[0]=0;
-    append(s,&p,sizeof(s),"[TTT DLC V2.0.0] ACTOR INJECT ");append(s,&p,sizeof(s),phase);
+    append(s,&p,sizeof(s),"[TTT DLC V2.0.2] ACTOR INJECT ");append(s,&p,sizeof(s),phase);
     append(s,&p,sizeof(s)," installed=");hex(s,&p,sizeof(s),st.installed);
     append(s,&p,sizeof(s)," enabled=");hex(s,&p,sizeof(s),st.enabled);
     append(s,&p,sizeof(s)," mask=");hex(s,&p,sizeof(s),st.enabled_mask);
@@ -180,7 +180,7 @@ static void inject_log(const char *phase){
     append(s,&p,sizeof(s),"\n");log_line(s);
     for(i=0;i<4;i++){
         char b[230];int q=0;b[0]=0;
-        append(b,&q,sizeof(b),"[TTT DLC V2.0.0] ACTOR INJECT SLOT player=");
+        append(b,&q,sizeof(b),"[TTT DLC V2.0.2] ACTOR INJECT SLOT player=");
         hex(b,&q,sizeof(b),(uint32_t)(i+1));
         append(b,&q,sizeof(b)," enabled=");hex(b,&q,sizeof(b),(st.enabled_mask>>i)&1u);
         append(b,&q,sizeof(b)," hits=");hex(b,&q,sizeof(b),st.slot_hits[i]);
@@ -197,7 +197,7 @@ static void plan_log(const TTTSlotPlan *plan,const char *phase,uint32_t frame){
     for(i=0;i<4;i++){
         char line[230];int p=0;line[0]=0;
         (void)ttt_slot_plan_get(plan,i,&ch);
-        append(line,&p,sizeof(line),"[TTT DLC V2.0.0] PLAN ");append(line,&p,sizeof(line),phase);
+        append(line,&p,sizeof(line),"[TTT DLC V2.0.2] PLAN ");append(line,&p,sizeof(line),phase);
         append(line,&p,sizeof(line)," player=");hex(line,&p,sizeof(line),(uint32_t)(i+1));
         append(line,&p,sizeof(line)," confirmed=");hex(line,&p,sizeof(line),ch.confirmed);
         append(line,&p,sizeof(line)," want_id=");hex(line,&p,sizeof(line),ch.external_id);
@@ -215,7 +215,7 @@ static const uint32_t actor_id[4]={0x08B48AE8u,0x08B48BC0u,0x08B48CB8u,0x08B48D9
 static const uint32_t actor_color[4]={0x08B48AF0u,0x08B48BC8u,0x08B48CC0u,0x08B48D98u};
 static void actor_probe_log(void){
     int i;char s[440];int p=0;s[0]=0;
-    append(s,&p,sizeof(s),"[TTT DLC V2.0.0] ACTOR RAW (observacao apos hook)");
+    append(s,&p,sizeof(s),"[TTT DLC V2.0.2] ACTOR RAW (observacao apos hook)");
     for(i=0;i<4;i++){
         append(s,&p,sizeof(s)," P");hex(s,&p,sizeof(s),(uint32_t)(i+1));
         append(s,&p,sizeof(s),"_id=");hex(s,&p,sizeof(s),*(volatile const uint32_t*)(uintptr_t)actor_id[i]);
@@ -242,7 +242,7 @@ static void actor_change_log(uint32_t *cursor){
     start=*cursor+1u;
     if(end-start+1u>32u){
         char gap[155];int gp=0;gap[0]=0;
-        append(gap,&gp,sizeof(gap),"[TTT DLC V2.0.0] ACTOR GAP dropped=");
+        append(gap,&gp,sizeof(gap),"[TTT DLC V2.0.2] ACTOR GAP dropped=");
         hex(gap,&gp,sizeof(gap),(end-start+1u)-32u);
         append(gap,&gp,sizeof(gap)," (aumentar amostragem do log)\n");
         log_line(gap);
@@ -251,7 +251,7 @@ static void actor_change_log(uint32_t *cursor){
     for(seq=start;seq<=end;seq++){
         TTTActorChange e;char b[410];int p=0;b[0]=0;
         if(ttt_actor_watch_get(&g_actor_watch,seq,&e)!=0)continue;
-        append(b,&p,sizeof(b),"[TTT DLC V2.0.0] ACTOR CHANGE seq=");
+        append(b,&p,sizeof(b),"[TTT DLC V2.0.2] ACTOR CHANGE seq=");
         hex(b,&p,sizeof(b),e.seq);
         append(b,&p,sizeof(b)," frame=");hex(b,&p,sizeof(b),e.frame);
         append(b,&p,sizeof(b)," player=");hex(b,&p,sizeof(b),e.player);
@@ -276,7 +276,7 @@ static void trace_log(uint32_t *cursor){
     for(seq=start;seq<=end;seq++){
         TTTResourceTrace e;char b[270];int p=0;b[0]=0;
         if(ttt_res_trace_get(seq,&e)!=0)continue;
-        append(b,&p,sizeof(b),"[TTT DLC V2.0.0] LOAD TRACE seq=");hex(b,&p,sizeof(b),e.seq);
+        append(b,&p,sizeof(b),"[TTT DLC V2.0.2] LOAD TRACE seq=");hex(b,&p,sizeof(b),e.seq);
         append(b,&p,sizeof(b)," site=");hex(b,&p,sizeof(b),e.site);
         append(b,&p,sizeof(b)," id=");hex(b,&p,sizeof(b),e.id);
         append(b,&p,sizeof(b)," offset=");hex(b,&p,sizeof(b),e.offset);
@@ -296,7 +296,7 @@ static int diagnostic_thread(SceSize args,void *argp) {
     ttt_actor_watch_init(&g_actor_watch);
     g_mission_progress=ttt_dlc_progress_load();
     ttt_gpu_set_dlc(0,g_mission_progress);
-    log_line("[TTT DLC V2.0.0] Thread iniciada. X confirma slot 1P-4P; IDs 00/01/02 com 4 Colors EXPERIMENTAIS: 12 CHRs, 4 jogadores. Form interno 0x47 compartilhado. SFX reservados.\n");
+    log_line("[TTT DLC V2.0.2] Thread iniciada. X confirma slot 1P-4P; IDs 00/01/02 com 4 Colors EXPERIMENTAIS: 12 CHRs, 4 jogadores. Form interno 0x47 compartilhado. SFX reservados.\n");
     /* Wait until game starts drawing and the loader finishes linking imports. */
     sceKernelDelayThread(1500000);
     probe_log("APOS_START");
@@ -306,10 +306,10 @@ static int diagnostic_thread(SceSize args,void *argp) {
         int rc=ttt_input_hook_install();
         if(rc<0) {
             char s[120];int p=0;s[0]=0;
-            append(s,&p,sizeof(s),"[TTT DLC V2.0.0] INPUT INSTALAR ERRO=");
+            append(s,&p,sizeof(s),"[TTT DLC V2.0.2] INPUT INSTALAR ERRO=");
             hex(s,&p,sizeof(s),(uint32_t)rc);
             append(s,&p,sizeof(s)," (controle do jogo NAO bloqueado)\n");log_line(s);
-        } else log_line("[TTT DLC V2.0.0] INPUT HOOK INSTALADO.\n");
+        } else log_line("[TTT DLC V2.0.2] INPUT HOOK INSTALADO.\n");
         input_log("APOS_INSTALAR");
     }
     while(g_running) {
@@ -322,18 +322,18 @@ static int diagnostic_thread(SceSize args,void *argp) {
             ttt_menu_rebase(&menu,pad.Buttons);
             if(toggle.open) {
                 int rc;
-                log_line("[TTT DLC V2.0.0] MENU ABERTO. Preparando GE.\n");
+                log_line("[TTT DLC V2.0.2] MENU ABERTO. Preparando GE.\n");
                 probe_log("ANTES_GPU");
                 if(!gpu_ready) {
                     rc=ttt_gpu_init();
-                    if(rc<0){log_line("[TTT DLC V2.0.0] GPU INIT ERRO.\n");toggle.open=0;ttt_input_hook_menu(0);}
+                    if(rc<0){log_line("[TTT DLC V2.0.2] GPU INIT ERRO.\n");toggle.open=0;ttt_input_hook_menu(0);}
                     else gpu_ready=1;
                     probe_log("DEPOIS_GPU");gpu_guard_log("INIT");
                 }
                 if(gpu_ready) {
                     {
                         char b[96];int q=0;b[0]=0;
-                        append(b,&q,sizeof(b),"[TTT DLC V2.0.0] PORTRAITS bits=");
+                        append(b,&q,sizeof(b),"[TTT DLC V2.0.2] PORTRAITS bits=");
                         hex(b,&q,sizeof(b),(uint32_t)ttt_gpu_portrait_status());
                         append(b,&q,sizeof(b)," (1=EARLY 2=MID 4=MID_SSJ) SKIN=");
                         hex(b,&q,sizeof(b),(uint32_t)ttt_gpu_skin_status());
@@ -345,14 +345,14 @@ static int diagnostic_thread(SceSize args,void *argp) {
                     {
                         TTTSkinStats tex=ttt_gpu_skin_stats();
                         char b[310];int q=0;b[0]=0;
-                        append(b,&q,sizeof(b),"[TTT DLC V2.0.0] SKIN_BG stage=");hex(b,&q,sizeof(b),(uint32_t)tex.bg.stage);
+                        append(b,&q,sizeof(b),"[TTT DLC V2.0.2] SKIN_BG stage=");hex(b,&q,sizeof(b),(uint32_t)tex.bg.stage);
                         append(b,&q,sizeof(b)," open=");hex(b,&q,sizeof(b),(uint32_t)tex.bg.open_rc);
                         append(b,&q,sizeof(b)," size=");hex(b,&q,sizeof(b),(uint32_t)tex.bg.file_size);
                         append(b,&q,sizeof(b)," alloc=");hex(b,&q,sizeof(b),(uint32_t)tex.bg.alloc_rc);
                         append(b,&q,sizeof(b)," read=");hex(b,&q,sizeof(b),(uint32_t)tex.bg.read_bytes);
                         append(b,&q,sizeof(b)," expected=0x00020000\n");log_line(b);
                         q=0;b[0]=0;
-                        append(b,&q,sizeof(b),"[TTT DLC V2.0.0] SKIN_FONT stage=");hex(b,&q,sizeof(b),(uint32_t)tex.font.stage);
+                        append(b,&q,sizeof(b),"[TTT DLC V2.0.2] SKIN_FONT stage=");hex(b,&q,sizeof(b),(uint32_t)tex.font.stage);
                         append(b,&q,sizeof(b)," open=");hex(b,&q,sizeof(b),(uint32_t)tex.font.open_rc);
                         append(b,&q,sizeof(b)," size=");hex(b,&q,sizeof(b),(uint32_t)tex.font.file_size);
                         append(b,&q,sizeof(b)," alloc=");hex(b,&q,sizeof(b),(uint32_t)tex.font.alloc_rc);
@@ -366,19 +366,19 @@ static int diagnostic_thread(SceSize args,void *argp) {
                     rc=ttt_frame_hook_install();
                     if(rc<0) {
                         char s[80];int p=0;s[0]=0;
-                        append(s,&p,sizeof(s),"[TTT DLC V2.0.0] HOOK INSTALAR ERRO=");hex(s,&p,sizeof(s),(uint32_t)rc);
+                        append(s,&p,sizeof(s),"[TTT DLC V2.0.2] HOOK INSTALAR ERRO=");hex(s,&p,sizeof(s),(uint32_t)rc);
                         append(s,&p,sizeof(s),"\n");log_line(s);
                         probe_log("FALHA_HOOK");
                         callsites_log("FALHA_HOOK");
                         toggle.open=0;
                         ttt_input_hook_menu(0);
-                    } else {log_line("[TTT DLC V2.0.0] HOOK INSTALADO.\n");callsites_log("INSTALADO");armed=1;}
+                    } else {log_line("[TTT DLC V2.0.2] HOOK INSTALADO.\n");callsites_log("INSTALADO");armed=1;}
                 }
             } else {
                 ttt_frame_hook_remove();armed=0;gpu_guard_log("CLOSE");
-                log_line("[TTT DLC V2.0.0] MENU FECHADO. HOOK RESTAURADO.\n");callsites_log("RESTAURADO");
+                log_line("[TTT DLC V2.0.2] MENU FECHADO. HOOK RESTAURADO.\n");callsites_log("RESTAURADO");
             }
-            if(toggled) log_line(toggle.open?"[TTT DLC V2.0.0] MENU HOTKEY ABERTO\n":"[TTT DLC V2.0.0] MENU HOTKEY FECHADO\n");
+            if(toggled) log_line(toggle.open?"[TTT DLC V2.0.2] MENU HOTKEY ABERTO\n":"[TTT DLC V2.0.2] MENU HOTKEY FECHADO\n");
             stats_log();
             input_log("TOGGLE");
         } else if(toggle.open) {
@@ -389,8 +389,8 @@ static int diagnostic_thread(SceSize args,void *argp) {
                 g_mission_progress=ttt_dlc_progress_mark(g_mission_progress,menu.mission);
                 ttt_gpu_set_dlc(menu.mission,g_mission_progress);
                 log_line(ttt_dlc_progress_save(g_mission_progress)==0?
-                    "[TTT DLC V2.0.0] DLC MISSAO MARCADA (MANUAL) E SALVA\n":
-                    "[TTT DLC V2.0.0] DLC MISSAO MARCADA MAS ERRO AO SALVAR\n");
+                    "[TTT DLC V2.0.2] DLC MISSAO MARCADA (MANUAL) E SALVA\n":
+                    "[TTT DLC V2.0.2] DLC MISSAO MARCADA MAS ERRO AO SALVAR\n");
             }else if(ev==TTT_EVENT_MISSION_PREPARE){
                 unsigned id=0,color=0;
                 if(ttt_dlc_mission_choices(menu.mission,&id,&color)==0){
@@ -400,7 +400,7 @@ static int diagnostic_thread(SceSize args,void *argp) {
                     /* No automatic match start. User must confirm with X
                      * again on Gokus tab, then enter game's Training. */
                     ttt_gpu_set_menu(ttt_menu_snapshot(&menu)|((uint32_t)ttt_bridge_is_active()<<30));
-                    log_line("[TTT DLC V2.0.0] MISSAO PREPARADA PARA 1P - CONFIRME X NA ABA GOKUS E ENTRE EM TREINO\n");
+                    log_line("[TTT DLC V2.0.2] MISSAO PREPARADA PARA 1P - CONFIRME X NA ABA GOKUS E ENTRE EM TREINO\n");
                 }
             }else if(ev==TTT_EVENT_CONFIRM) {
                 if(menu.tab==0){
@@ -408,7 +408,7 @@ static int diagnostic_thread(SceSize args,void *argp) {
                     plan_log(&plan,"CONFIRMAR",frames);
                 }
                 char line[230];int p=0;line[0]=0;
-                append(line,&p,sizeof(line),"[TTT DLC V2.0.0] CONFIRMACAO personagem=");
+                append(line,&p,sizeof(line),"[TTT DLC V2.0.2] CONFIRMACAO personagem=");
                 append(line,&p,sizeof(line),menu.character==0?"GOKU_(INICIO)":menu.character==1?"GOKU_(MEIO)":"GOKU_(MEIO)_SUPER_SAIYAJIN");
                 append(line,&p,sizeof(line)," ID=");
                 append(line,&p,sizeof(line),menu.character==0?"00":menu.character==1?"01":"02");
@@ -450,14 +450,14 @@ static int diagnostic_thread(SceSize args,void *argp) {
                 ttt_slot_plan_reset(&plan);
                 for(int k=0;k<4;k++)menu.confirmed[k]=0;
                 int rc=ttt_bridge_remove();
-                log_line(rc==0?"[TTT DLC V2.0.0] BRIDGE DESARMADA PELO QUADRADO.\n":"[TTT DLC V2.0.0] AVISO BRIDGE RESTAURACAO INCOMPLETA.\n");
+                log_line(rc==0?"[TTT DLC V2.0.2] BRIDGE DESARMADA PELO QUADRADO.\n":"[TTT DLC V2.0.2] AVISO BRIDGE RESTAURACAO INCOMPLETA.\n");
                 bridge_log("DESARMAR");resource_log("DESARMAR");inject_log("DESARMAR");plan_log(&plan,"RESET",frames);
                 ttt_gpu_set_menu(ttt_menu_snapshot(&menu)|((uint32_t)ttt_bridge_is_active()<<30));
             } else if(ev==TTT_EVENT_CLOSE) {
                 toggle.open=0;
                 ttt_input_hook_menu(0);
                 ttt_frame_hook_remove();armed=0;gpu_guard_log("CLOSE");
-                log_line("[TTT DLC V2.0.0] MENU FECHADO CIRCULO. HOOK RESTAURADO.\n");
+                log_line("[TTT DLC V2.0.2] MENU FECHADO CIRCULO. HOOK RESTAURADO.\n");
                 callsites_log("RESTAURADO");
             }
         } else {
@@ -473,7 +473,7 @@ static int diagnostic_thread(SceSize args,void *argp) {
                 TTTFrameHookStats hs=ttt_frame_hook_stats();
                 TTTGeGuardStats gs=ttt_gpu_guard_stats();
                 char b[320];int q=0;b[0]=0;
-                append(b,&q,sizeof(b),"[TTT DLC V2.0.0] MENU WATCHDOG open=");
+                append(b,&q,sizeof(b),"[TTT DLC V2.0.2] MENU WATCHDOG open=");
                 hex(b,&q,sizeof(b),(uint32_t)toggle.open);
                 append(b,&q,sizeof(b)," player=");hex(b,&q,sizeof(b),(uint32_t)menu.player);
                 append(b,&q,sizeof(b)," chr=");hex(b,&q,sizeof(b),(uint32_t)menu.character);
@@ -488,7 +488,7 @@ static int diagnostic_thread(SceSize args,void *argp) {
                 if(armed && hs.installed && !hs.draw_enabled && !gs.failed) {
                     int retry_rc=ttt_frame_hook_resume_drawing();
                     char retry[110];int rp=0;retry[0]=0;
-                    append(retry,&rp,sizeof(retry),"[TTT DLC V2.0.0] MENU RECOVERY RESULT rc=");
+                    append(retry,&rp,sizeof(retry),"[TTT DLC V2.0.2] MENU RECOVERY RESULT rc=");
                     hex(retry,&rp,sizeof(retry),(uint32_t)retry_rc);
                     append(retry,&rp,sizeof(retry),"\n");log_line(retry);
                 }
@@ -514,11 +514,11 @@ static int diagnostic_thread(SceSize args,void *argp) {
 }
 int module_start(SceSize args,void *argp) {
     (void)args;(void)argp;
-    log_line("\n[TTT DLC V2.0.0] module_start OK - ULUS10537 | DLC Rebuild: 3 GOKUS 12 CHR + 6 DESAFIOS MANUAIS\n");
+    log_line("\n[TTT DLC V2.0.2] module_start OK - ULUS10537 | DLC Rebuild V2.0.2: ATLAS UNICO 128KB + 3 GOKUS + 6 MISSOES\n");
     g_running=1;
     g_worker=sceKernelCreateThread("TTTExpMenuWorker",diagnostic_thread,0x20,0x4000,0,NULL);
-    if(g_worker<0){g_running=0;log_line("[TTT DLC V2.0.0] ERROR: thread create\n");return 0;}
-    if(sceKernelStartThread(g_worker,0,NULL)<0){g_running=0;log_line("[TTT DLC V2.0.0] ERROR: thread start\n");}
+    if(g_worker<0){g_running=0;log_line("[TTT DLC V2.0.2] ERROR: thread create\n");return 0;}
+    if(sceKernelStartThread(g_worker,0,NULL)<0){g_running=0;log_line("[TTT DLC V2.0.2] ERROR: thread start\n");}
     return 0;
 }
 int module_stop(SceSize args,void *argp) {

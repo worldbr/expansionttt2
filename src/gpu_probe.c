@@ -194,18 +194,23 @@ static void panel(int x,int y,int w,int h,uint32_t border,uint32_t inside){
     box(x+2,y+2,w-4,h-4,inside);
 }
 
-/* === V1.0.1 full textured menu: UI .4444 blobs are loaded AFTER opening.
- * Do not store large GUI textures in PRX .bss; a 512KiB static list caused
- * a black-screen regression. Files are raw PSP ABGR4444, NOT PNG. === */
+/* DLC V2.0.2 packed skin: the user's game successfully allocates exactly
+ * 128 KiB for BG but refuses another 64 KiB for the font (0x800200D9).
+ * Keep one 128-KiB PSP user partition allocation, and store both textures:
+ * rows 0..159 = downsampled menu BG, rows 160..255 = font rows 0..95.
+ * Existing .4444 files remain unchanged on disk. This is a RAM-only atlas. */
 #define TTT_MENU_BG_BYTES (256u*256u*2u)
 #define TTT_FONT_BYTES (256u*128u*2u)
+#define TTT_SKIN_BG_ROWS 160u
+#define TTT_SKIN_FONT_ROWS 96u
+#define TTT_SKIN_FONT_Y 160u
+#define TTT_SKIN_FONT_USED_BYTES (256u*TTT_SKIN_FONT_ROWS*2u)
 #define TTT_BG_PATH "ms0:/PSP/PLUGINS/TTT_EXPANSION/ui/menu_bg.4444"
 #define TTT_FONT_PATH "ms0:/PSP/PLUGINS/TTT_EXPANSION/ui/font_atlas.4444"
 static uint8_t *ttt_skin_bg;
 static uint8_t *ttt_skin_font;
-/* Raw 4444 textures use PSP user memory blocks instead of PRX libc heap.
- * Previous version reported SKIN=0 while three static portraits loaded;
- * missing files and PRX libc-heap allocation were not distinguished. */
+/* Exactly ONE PSP allocation for both textures. The font has no separate
+ * block; this matters on a game process with severely fragmented user RAM. */
 static SceUID skin_bg_block=-1;
 static SceUID skin_font_block=-1;
 static volatile int ttt_skin_ready;
@@ -262,17 +267,56 @@ static uint8_t *skin_load(const char *path, const char *block_name,
     sceKernelDcacheWritebackRange(buf,(size_t)expected);
     return buf;
 }
+/* Packs both files into the single 128-KiB block that PPSSPP already
+ * proved it can allocate. The original BG is compacted in-place safely:
+ * source row always >= destination row (top-to-bottom). */
+static uint8_t *skin_load_font_into_background(uint8_t *bg,TTTSkinFileStats *st){
+    SceUID fd;
+    int size,count=0;
+    unsigned y,x;
+    uint16_t *pixels;
+    st->stage=0;st->open_rc=0;st->file_size=-1;
+    st->alloc_rc=0; /* Shares BG's block; no second allocation attempted. */
+    st->read_bytes=0;
+    if(!bg){st->stage=6;return NULL;} /* BG failed; no shared buffer. */
+    fd=sceIoOpen(TTT_FONT_PATH,PSP_O_RDONLY,0);
+    if(fd<0){st->stage=1;st->open_rc=fd;return NULL;}
+    size=sceIoLseek(fd,0,PSP_SEEK_END);
+    st->file_size=size;
+    if(size!=(int)TTT_FONT_BYTES || sceIoLseek(fd,0,PSP_SEEK_SET)<0){
+        st->stage=2;sceIoClose(fd);return NULL;
+    }
+    /* Move 256 BG rows into the first 160 rows, preserving their full width.
+     * BG's last row maps to row 159. This does not require any scratch RAM. */
+    pixels=(uint16_t*)bg;
+    for(y=0;y<TTT_SKIN_BG_ROWS;y++){
+        unsigned source=(y*255u)/(TTT_SKIN_BG_ROWS-1u);
+        if(source==y)continue;
+        for(x=0;x<256u;x++)pixels[y*256u+x]=pixels[source*256u+x];
+    }
+    /* The ASCII font occupies six rows of 16x16 cells = 96 pixels.
+     * The last 32 unused source rows are irrelevant; read exactly 96 rows. */
+    while(count<(int)TTT_SKIN_FONT_USED_BYTES){
+        int n=sceIoRead(fd,bg+(TTT_SKIN_FONT_Y*256u*2u)+count,
+                       (int)TTT_SKIN_FONT_USED_BYTES-count);
+        if(n<=0)break;
+        count+=n;
+    }
+    st->read_bytes=count;
+    sceIoClose(fd);
+    if(count!=(int)TTT_SKIN_FONT_USED_BYTES){st->stage=5;return NULL;}
+    sceKernelDcacheWritebackRange(bg,TTT_MENU_BG_BYTES);
+    return bg;
+}
 static void skin_load_all(void){
-    /* Called once at first menu open. Avoid duplicate allocation if
-     * GPU initialization ever gets retried. */
+    /* Called once at first menu open; keep previous graceful failure. */
     skin_free(&ttt_skin_bg,&skin_bg_block);
     skin_free(&ttt_skin_font,&skin_font_block);
     ttt_skin_mask=0;
     ttt_skin_ready=0;
-    ttt_skin_bg=skin_load(TTT_BG_PATH,"TTT_UI_BG",
+    ttt_skin_bg=skin_load(TTT_BG_PATH,"TTT_UI_ATLAS",
            (int)TTT_MENU_BG_BYTES,&skin_bg_block,&skin_stats.bg);
-    ttt_skin_font=skin_load(TTT_FONT_PATH,"TTT_UI_FONT",
-           (int)TTT_FONT_BYTES,&skin_font_block,&skin_stats.font);
+    ttt_skin_font=skin_load_font_into_background(ttt_skin_bg,&skin_stats.font);
     ttt_skin_mask=(ttt_skin_bg?1u:0u)|(ttt_skin_font?2u:0u);
     skin_stats.mask=ttt_skin_mask;
     ttt_skin_ready=(ttt_skin_bg && ttt_skin_font)?1:0;
@@ -313,7 +357,7 @@ static void skin_bind_font(void){
     sceGuTexFunc(GU_TFX_MODULATE,GU_TCC_RGBA);
     sceGuTexFilter(GU_NEAREST,GU_NEAREST);
     sceGuTexWrap(GU_CLAMP,GU_CLAMP);
-    sceGuTexImage(0,256,128,256,ttt_skin_font);
+    sceGuTexImage(0,256,256,256,ttt_skin_bg); /* shared 256x256 atlas */
 }
 /* Font sprite atlas: ASCII 32..127, 16 columns, 16x16 cells.
  * Actual visible glyph in each cell is ~9x12 pixels. */
@@ -327,7 +371,7 @@ static void skin_text(int x,int y,const char *str,int large,uint32_t color){
         if(ch<32||ch>127)ch='?';
         at=(int)(ch-32);
         if(x+i*dx+cw>480)break;
-        if(ch!=' ')skin_sprite(x+i*dx,y,cw,dy,(at%16)*16,(at/16)*16,11,14);
+        if(ch!=' ')skin_sprite(x+i*dx,y,cw,dy,(at%16)*16,(int)TTT_SKIN_FONT_Y+(at/16)*16,11,14);
     }
 }
 static void skin_outline(int x,int y,int w,int h,uint32_t color){
@@ -359,7 +403,7 @@ static void skin_text_compact(int x,int y,const char *str,int step,int glyph_w,i
         if(ch<32u||ch>127u)ch='?';
         if(x+i*step+glyph_w>480)break;
         at=(int)ch-32;
-        if(ch!=' ')skin_sprite(x+i*step,y,glyph_w,glyph_h,(at%16)*16,(at/16)*16,11,14);
+        if(ch!=' ')skin_sprite(x+i*step,y,glyph_w,glyph_h,(at%16)*16,(int)TTT_SKIN_FONT_Y+(at/16)*16,11,14);
     }
 }
 static void skin_frame_fallback(uint32_t bits){
@@ -370,8 +414,8 @@ static void skin_frame_fallback(uint32_t bits){
     int player=(int)((bits>>8)&3u),focus=(int)((bits>>31)&1u),i;
     char num[3]="1P",label[4]="C1";
     box(8,8,464,256,C_DARK);panel(12,12,456,248,C_LIGHT,C_OUTER);
-    txt(23,23,"TTT EXPANSION V1.0.1",1,C_WHITE);
-    txt(25,50,"TEXTURAS AUSENTES - VERIFIQUE PASTA UI",1,C_GOLD);
+    txt(23,23,"TTT DLC REBUILD V2.0.2",1,C_WHITE);
+    txt(25,50,"ATLAS TEXTURA NAO CARREGOU - VER LOG SKIN",1,C_GOLD);
     for(i=0;i<3;i++){
         int x=22+153*i;
         panel(x,83,146,79,(character==i&&!focus)?C_GOLD:C_LIGHT,C_DARK);
@@ -397,7 +441,7 @@ static void render_menu_textured(uint32_t bits){
     if(lang>2)lang=0;
     /* Layer 1: actual PSP 4444 background texture. */
     skin_bind_background();
-    skin_sprite(0,0,480,272,0,0,256,256);
+    skin_sprite(0,0,480,272,0,0,256,(int)TTT_SKIN_BG_ROWS);
     sceGuDisable(GU_TEXTURE_2D);
     /* Layer 2: selective, geometry-aligned interaction highlights. */
     /* The source background has three original tab frames; overpaint that
@@ -422,7 +466,7 @@ static void render_menu_textured(uint32_t bits){
     /* Layer 4: single font atlas, no per-pixel rectangles and no overflow. */
     skin_bind_font();
     skin_text_compact(23,22,"TTT EXPANSION",11,11,17,C_WHITE);
-    skin_text(244,31,"V2.0",0,C_GOLD);
+    skin_text(244,31,"V2.0.2",0,C_GOLD);
     for(i=0;i<4;i++){
         slot[0]=(char)('1'+i);
         skin_text(319+i*38,27,slot,0,i==player?C_GOLD:C_WHITE);

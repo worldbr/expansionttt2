@@ -14,6 +14,8 @@ static FILE *files[16];
 static void *blocks[16];
 static const char *assetroot;
 static int fail_alloc;
+static size_t allowed_alloc_bytes=131072u; /* simulate PSP resource pressure */
+static unsigned allocations;
 SceUID sceIoOpen(const char *path,int flags,int mode){
     int i; char local[1024];const char *prefix="ms0:/PSP/PLUGINS/TTT_EXPANSION/";
     (void)flags;(void)mode;
@@ -39,7 +41,8 @@ int sceIoClose(SceUID fd){
 SceUID sceKernelAllocPartitionMemory(SceUID partitionid,const char *name,int type,SceSize size,void *addr){
     int i;(void)name;(void)type;(void)addr;
     assert(partitionid==2);
-    if(fail_alloc)return -8;
+    if(fail_alloc || size>allowed_alloc_bytes)return -8;
+    ++allocations;
     for(i=1;i<16;i++)if(!blocks[i])break;
     if(i==16)return -9;
     blocks[i]=malloc(size);return blocks[i]?i:-10;
@@ -62,10 +65,12 @@ int main(int argc,char **argv){
     assert(stats.mask==(unsigned)atoi(argv[3]));
     if(stats.mask==3){
         assert(stats.bg.stage==0&&stats.font.stage==0);
-        assert(stats.bg.read_bytes==131072&&stats.font.read_bytes==65536);
+        assert(stats.bg.read_bytes==131072&&stats.font.read_bytes==49152);
+        assert(stats.font.alloc_rc==0); /* same user block */
+        assert(allocations==1);
         assert(stats.bg.file_size==131072&&stats.font.file_size==65536);
-    }else if(fail_alloc){assert(stats.bg.stage==3&&stats.font.stage==3);}
-    else{assert(stats.bg.stage==1&&stats.font.stage==1);}
+    }else if(fail_alloc){assert(stats.bg.stage==3&&stats.font.stage==6);}
+    else{assert(stats.bg.stage==1&&stats.font.stage==6);}
     ttt_gpu_shutdown();
     for(int i=1;i<16;i++) assert(!blocks[i]&&!files[i]);
     puts("SKIN LOADER MOCK PASS");

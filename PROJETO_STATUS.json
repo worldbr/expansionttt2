@@ -14,5 +14,9 @@
   "story_mode_auto_start": false,
   "compiled_prx_in_zip": false,
   "assets_include_one_original_user_chr": true,
-  "files": 96
+  "files": 96,
+  "version": "2.0.2",
+  "skin_memory_strategy": "128KB single PSP user memory block containing background and font",
+  "verified_in_ppsspp": false,
+  "host_tests_passed": true
 }

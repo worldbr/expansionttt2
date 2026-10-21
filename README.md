@@ -1,3 +1,11 @@
+# TTT Expansion DLC Rebuild V2.0.2 — Atlas compartilhado 128 KiB
+
+**Leia `LEIA_V2002_ATLAS_UNICO.md` antes de instalar.**
+
+A versão corrige o erro real da V2.0.1 (`SKIN_FONT stage=3 alloc=0x800200D9`) usando só a memória de 128 KiB que o PSP já conseguiu alocar. Mantém as características do DLC Rebuild V2.0.1 sem tocar na ISO.
+
+Ainda precisa ser compilada pelo GitHub Actions e validada no PPSSPP.
+
 # TTT Expansion — DLC Rebuild 2.0 (ULUS10537)
 
 Pacote com projeto completo de plugin PRX PSP/PPSSPP, assets de menu, missões de treinamento, mapa de índices e ferramentas de PACKFILE/EBOOT. **Não inclui ISO, nem os 11 CHRs externos que ainda não foram enviados como arquivos.**

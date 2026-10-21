@@ -19,7 +19,8 @@ int ttt_gpu_portrait_status(void);
 /* 1: HD skin loaded from external raw textures, 0: legacy fallback. */
 int ttt_gpu_skin_status(void);
 /* stage: 0 success, 1 open error, 2 wrong size/seek, 3 memory allocation,
- * 4 null memory block pointer, 5 short read. */
+ * 4 null memory block pointer, 5 short read,
+ * 6 background unavailable (shared atlas not possible). */
 typedef struct {
     int stage,open_rc,file_size,alloc_rc,read_bytes;
 } TTTSkinFileStats;
